@@ -12,7 +12,7 @@ class TasksApi extends Api {
   TasksApi(this._service);
 
   @override
-  Handler getHandler({List<Middleware>? middleware}) {
+  Handler getHandler({List<Middleware>? middleware, isSecurityEnabled = true}) {
     Router router = Router();
 
     router.get('/tasks', (Request req) {
@@ -34,6 +34,10 @@ class TasksApi extends Api {
       return Response.ok('');
     });
 
-    return createHandler(router: router, middlewares: middleware);
+    return createHandler(
+      router: router,
+      middlewares: middleware,
+      isSecurityEnabled: isSecurityEnabled,
+    );
   }
 }

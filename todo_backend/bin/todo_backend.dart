@@ -4,15 +4,24 @@ import 'api/login.api.dart';
 import 'api/tasks.api.dart';
 import 'infra/custom_server.dart';
 import 'infra/middleware_interception.dart';
+import 'infra/security/security.service.dart';
 import 'infra/security/security_service_imp.dart';
 import 'services/tasks.service.dart';
 import 'utils/custom_env.dart';
 
 void main() async {
   CustomEnv.fromFile('.env-dev');
-  var cascadeHandler = Cascade()
-      .add(LoginApi(SecurityServiceImp()).handler)
-      .add(TasksApi(TasksService()).handler);
+  SecurityService securityService = SecurityServiceImp();
+
+  var cascadeHandler =
+      Cascade().add(LoginApi(securityService).getHandler()).add(
+            TasksApi(TasksService()).getHandler(
+              middleware: [
+                securityService.authorization,
+                securityService.verifyJwt,
+              ],
+            ),
+          );
 
   var handler = Pipeline()
       .addMiddleware(logRequests())

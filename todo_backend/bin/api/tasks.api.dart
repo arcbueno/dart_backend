@@ -5,12 +5,14 @@ import 'package:shelf_router/shelf_router.dart';
 
 import '../models/task.dart';
 import '../services/generic.service.dart';
+import 'api.dart';
 
-class TasksApi {
+class TasksApi extends Api {
   final GenericService<Task> _service;
   TasksApi(this._service);
 
-  Handler get handler {
+  @override
+  Handler getHandler({List<Middleware>? middleware}) {
     Router router = Router();
 
     router.get('/tasks', (Request req) {
@@ -32,6 +34,6 @@ class TasksApi {
       return Response.ok('');
     });
 
-    return router;
+    return createHandler(router: router, middlewares: middleware);
   }
 }
